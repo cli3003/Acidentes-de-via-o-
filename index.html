@@ -1,0 +1,301 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SafeRoad</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#0b1120;
+  color:white;
+}
+header{
+  padding:22px 18px;
+  background:#121b2e;
+}
+header h1{margin:0;color:#52d6a5}
+header p{color:#aab5c7;margin-bottom:0}
+main{padding:16px;padding-bottom:95px}
+.page{display:none}
+.page.active{display:block}
+.card{
+  background:#172238;
+  border:1px solid #263650;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:15px;
+}
+.card h3{margin-top:0}
+.btn{
+  border:0;
+  padding:14px;
+  width:100%;
+  border-radius:12px;
+  background:#36c995;
+  color:#07150f;
+  font-weight:bold;
+  margin-top:10px;
+}
+.btn.secondary{background:#263650;color:white}
+.status{
+  text-align:center;
+  padding:25px;
+  border-radius:16px;
+  background:#153d35;
+}
+.status h2{color:#52d6a5}
+.big{font-size:35px}
+.warning{
+  background:#49391c;
+  border-left:4px solid #ffbf45;
+}
+.danger{
+  background:#49252c;
+  border-left:4px solid #ff6464;
+}
+nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#111a2b;
+  display:flex;
+  justify-content:space-around;
+  padding:10px 4px;
+  border-top:1px solid #263650;
+}
+nav button{
+  background:none;
+  border:0;
+  color:#aab5c7;
+  font-size:12px;
+  padding:8px 4px;
+}
+nav button.selected{color:#52d6a5}
+nav span{display:block;font-size:21px;margin-bottom:4px}
+#map{
+  width:100%;
+  height:250px;
+  border:0;
+  border-radius:14px;
+  margin-top:12px;
+}
+ul{padding-left:20px;line-height:1.8}
+small{color:#aab5c7}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🛡️ SafeRoad</h1>
+  <p>O teu companheiro de segurança rodoviária</p>
+</header>
+
+<main>
+
+<!-- HOME -->
+<section class="page active" id="home">
+  <div class="status">
+    <div class="big">🛡️</div>
+    <h2>Segurança em primeiro lugar</h2>
+    <p id="homeStatus">Ativa a tua localização para começar.</p>
+  </div>
+
+  <button class="btn" onclick="getLocation()">📍 Ativar localização</button>
+  <button class="btn secondary" onclick="showPage('proximity')">🚗 Ver proximidade</button>
+
+  <div class="card warning">
+    <h3>⚠️ Atenção na estrada</h3>
+    <p>Olha para os dois lados antes de atravessar. Evita usar o telemóvel enquanto atravessas.</p>
+  </div>
+
+  <div class="card">
+    <h3>📢 Aviso de demonstração</h3>
+    <p id="alertText">Os alertas de veículos nesta versão são ilustrativos, não são deteções reais.</p>
+  </div>
+</section>
+
+<!-- PROXIMITY -->
+<section class="page" id="proximity">
+  <h2>🚗 Proximidade</h2>
+
+  <div class="card">
+    <div class="status">
+      <div class="big">🚘</div>
+      <h2 id="vehicleStatus">Monitorização demonstrativa</h2>
+      <p id="vehicleInfo">Esta área mostra exemplos de alertas.</p>
+    </div>
+    <button class="btn" onclick="demoAlert()">▶ Iniciar demonstração</button>
+    <button class="btn secondary" onclick="stopDemo()">■ Parar</button>
+  </div>
+
+  <div class="card warning">
+    <h3>⚠️ Lembrete</h3>
+    <p>Não confies nesta demonstração para decidir se podes atravessar. Verifica sempre o trânsito visualmente.</p>
+  </div>
+</section>
+
+<!-- LEARN -->
+<section class="page" id="learn">
+  <h2>📚 Aprender</h2>
+
+  <div class="card">
+    <h3>🚶 Segurança para peões</h3>
+    <ul>
+      <li>Utiliza as passadeiras.</li>
+      <li>Olha para os dois lados antes de atravessar.</li>
+      <li>Verifica se os veículos pararam.</li>
+      <li>Evita correr ao atravessar.</li>
+      <li>Evita distrações com o telemóvel.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>🚦 Sinais de trânsito</h3>
+    <ul>
+      <li>Vermelho: parar.</li>
+      <li>Amarelo: atenção e preparação.</li>
+      <li>Verde: avançar quando for seguro.</li>
+    </ul>
+  </div>
+
+  <div class="card danger">
+    <h3>⚠️ Locais de maior risco</h3>
+    <ul>
+      <li>Entradas e saídas de veículos.</li>
+      <li>Cruzamentos movimentados.</li>
+      <li>Locais sem visibilidade.</li>
+      <li>Estradas sem passeio.</li>
+      <li>Áreas próximas de escolas e mercados.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>🧠 Conselho de segurança</h3>
+    <p>Mesmo que tenhas prioridade, confirma sempre que os veículos te viram e estão a parar.</p>
+  </div>
+</section>
+
+<!-- LOCATION -->
+<section class="page" id="location">
+  <h2>📍 Localização & zonas de risco</h2>
+
+  <div class="card">
+    <p id="locationText">Ainda não obtivemos a localização.</p>
+    <button class="btn" onclick="getLocation()">Obter localização GPS</button>
+    <div id="mapContainer"></div>
+  </div>
+
+  <div class="card warning">
+    <h3>⚠️ Zonas de atenção</h3>
+    <p>Esta versão ainda não possui uma base real de locais de acidentes. Mantém atenção redobrada em cruzamentos, curvas e locais com pouca visibilidade.</p>
+  </div>
+</section>
+
+</main>
+
+<nav>
+  <button class="selected" onclick="showPage('home',this)">
+    <span>🏠</span>Início
+  </button>
+  <button onclick="showPage('proximity',this)">
+    <span>🚗</span>Proximidade
+  </button>
+  <button onclick="showPage('learn',this)">
+    <span>📚</span>Aprender
+  </button>
+  <button onclick="showPage('location',this)">
+    <span>📍</span>Mapa
+  </button>
+</nav>
+
+<script>
+let demoTimer;
+
+function showPage(page,button){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(page).classList.add('active');
+
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('selected'));
+  if(button) button.classList.add('selected');
+}
+
+function getLocation(){
+  const status=document.getElementById('homeStatus');
+  const locationText=document.getElementById('locationText');
+
+  if(!navigator.geolocation){
+    status.textContent="GPS não suportado neste navegador.";
+    return;
+  }
+
+  status.textContent="A obter localização...";
+
+  navigator.geolocation.getCurrentPosition(
+    function(pos){
+      const lat=pos.coords.latitude;
+      const lon=pos.coords.longitude;
+
+      status.textContent="Localização obtida!";
+      locationText.textContent=
+        "Latitude: "+lat.toFixed(5)+" | Longitude: "+lon.toFixed(5);
+
+      document.getElementById('mapContainer').innerHTML=
+        `<iframe id="map"
+        src="https://www.openstreetmap.org/export/embed.html?bbox=${lon-0.01}%2C${lat-0.01}%2C${lon+0.01}%2C${lat+0.01}&layer=mapnik&marker=${lat}%2C${lon}">
+        </iframe>`;
+    },
+    function(){
+      status.textContent="Não foi possível obter GPS. Verifica as permissões.";
+      locationText.textContent="Localização indisponível.";
+    },
+    {enableHighAccuracy:true,timeout:15000}
+  );
+}
+
+function demoAlert(){
+  const status=document.getElementById('vehicleStatus');
+  const info=document.getElementById('vehicleInfo');
+
+  const messages=[
+    ["🟢 Demonstração","Exemplo: zona sem alerta."],
+    ["🟡 Atenção","Exemplo: veículo ilustrativo próximo."],
+    ["🔴 Perigo","Exemplo: alerta simulado. Mantém distância da estrada."]
+  ];
+
+  let i=0;
+  stopDemo();
+
+  function update(){
+    status.textContent=messages[i][0];
+    info.textContent=messages[i][1];
+    speak(messages[i][1]);
+    i=(i+1)%messages.length;
+  }
+
+  update();
+  demoTimer=setInterval(update,5000);
+}
+
+function stopDemo(){
+  clearInterval(demoTimer);
+  demoTimer=null;
+  document.getElementById('vehicleStatus').textContent="Demonstração parada";
+  document.getElementById('vehicleInfo').textContent="Os alertas não estão ativos.";
+}
+
+function speak(text){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const msg=new SpeechSynthesisUtterance(text);
+  msg.lang='pt-PT';
+  window.speechSynthesis.speak(msg);
+}
+</script>
+
+</body>
+</html>
